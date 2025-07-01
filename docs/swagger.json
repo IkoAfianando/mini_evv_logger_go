@@ -1,0 +1,631 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is the API for the Caregiver Shift Tracker application.",
+        "title": "Mini EVV Logger API",
+        "contact": {
+            "name": "API Support",
+            "email": "support@bluehorntek.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/reset": {
+            "post": {
+                "description": "Resets the in-memory data to the initial set of schedules and tasks, useful for testing.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Reset data store",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules": {
+            "get": {
+                "description": "Fetches a list of all caregiver schedules, sorted chronologically",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get all schedules",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Schedule"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/today": {
+            "get": {
+                "description": "Fetches all schedules scheduled for the current date",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get today's schedules",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Schedule"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{id}": {
+            "get": {
+                "description": "Fetches the details of a single schedule using its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get schedule by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{id}/cancel-clock-in": {
+            "post": {
+                "description": "Cancels the clock-in by clearing time and location, and sets status back to \"scheduled\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Visits"
+                ],
+                "summary": "Cancel clock-in",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{id}/clock-in": {
+            "get": {
+                "description": "Records the clock-in time and location for a schedule.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Visits"
+                ],
+                "summary": "Clock in for a schedule",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{id}/end": {
+            "post": {
+                "description": "Marks an in-progress visit as \"completed\" and records the end time and location.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Visits"
+                ],
+                "summary": "End a visit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "End Location",
+                        "name": "location",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EndVisitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{id}/start": {
+            "post": {
+                "description": "Marks a scheduled visit as \"in_progress\" and records the start time and location.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Visits"
+                ],
+                "summary": "Start a visit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Start Location",
+                        "name": "location",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.StartVisitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{id}/tasks": {
+            "post": {
+                "description": "Adds a new task with name and description to the given schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Add a task to schedule",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Task to add",
+                        "name": "task",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddTaskRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/{taskId}/update": {
+            "put": {
+                "description": "Updates the status of a specific task to \"completed\" or \"not_completed\".",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Update a task status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Task ID",
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Task Status Update",
+                        "name": "update",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateTaskRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Task"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.AddTaskRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ClientContact": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "melisa@example.com"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "+44 1232 212 3233"
+                }
+            }
+        },
+        "models.EndVisitRequest": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/definitions/models.Geolocation"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Geolocation": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "example": -6.2
+                },
+                "longitude": {
+                    "type": "number",
+                    "example": 106.816666
+                }
+            }
+        },
+        "models.Location": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "123 Main St"
+                },
+                "coordinates": {
+                    "$ref": "#/definitions/models.Geolocation"
+                }
+            }
+        },
+        "models.Schedule": {
+            "type": "object",
+            "properties": {
+                "amOrPm": {
+                    "description": "\"AM\" or \"PM\"",
+                    "type": "string",
+                    "example": "AM"
+                },
+                "clientContact": {
+                    "$ref": "#/definitions/models.ClientContact"
+                },
+                "clientName": {
+                    "type": "string",
+                    "example": "Melisa Adam"
+                },
+                "clockInLocation": {
+                    "$ref": "#/definitions/models.Geolocation"
+                },
+                "clockInTime": {
+                    "type": "string"
+                },
+                "clockOutLocation": {
+                    "$ref": "#/definitions/models.Geolocation"
+                },
+                "clockOutTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "location": {
+                    "$ref": "#/definitions/models.Location"
+                },
+                "serviceName": {
+                    "type": "string",
+                    "example": "Casa Grande Apartment"
+                },
+                "serviceNotes": {
+                    "type": "string",
+                    "example": "Client may be a bit groggy."
+                },
+                "shiftDate": {
+                    "type": "string",
+                    "example": "2025-01-15"
+                },
+                "shiftTime": {
+                    "type": "string",
+                    "example": "09:00 - 10:00"
+                },
+                "status": {
+                    "description": "\"scheduled\", \"in-progress\", \"completed\", \"missed\", \"cancelled\"",
+                    "type": "string",
+                    "example": "scheduled"
+                },
+                "tasks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Task"
+                    }
+                }
+            }
+        },
+        "models.StartVisitRequest": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/definitions/models.Geolocation"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Task": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Administer morning pills with water."
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Give medication"
+                },
+                "notCompletedReason": {
+                    "type": "string",
+                    "example": "Client refused medication."
+                }
+            }
+        },
+        "models.UpdateTaskRequest": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "notCompletedReason": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

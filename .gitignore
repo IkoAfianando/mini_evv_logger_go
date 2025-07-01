@@ -1,0 +1,34 @@
+# Compiled Go files and binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# The executable binary from 'go build'
+# Replace 'evv-logger-backend' with your actual binary name if it's different
+evv-logger-backend
+
+# Test binaries
+*.test
+
+# Dependency management
+# Go modules vendor directory
+vendor/
+
+# Environment variables file
+.env
+
+# Log files
+*.log
+*.log.*
+
+# IDE and editor specific files
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db

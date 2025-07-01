@@ -1,0 +1,425 @@
+basePath: /
+definitions:
+  models.AddTaskRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  models.ClientContact:
+    properties:
+      email:
+        example: melisa@example.com
+        type: string
+      phone:
+        example: +44 1232 212 3233
+        type: string
+    type: object
+  models.EndVisitRequest:
+    properties:
+      location:
+        $ref: '#/definitions/models.Geolocation'
+      timestamp:
+        type: string
+    type: object
+  models.Geolocation:
+    properties:
+      latitude:
+        example: -6.2
+        type: number
+      longitude:
+        example: 106.816666
+        type: number
+    type: object
+  models.Location:
+    properties:
+      address:
+        example: 123 Main St
+        type: string
+      coordinates:
+        $ref: '#/definitions/models.Geolocation'
+    type: object
+  models.Schedule:
+    properties:
+      amOrPm:
+        description: '"AM" or "PM"'
+        example: AM
+        type: string
+      clientContact:
+        $ref: '#/definitions/models.ClientContact'
+      clientName:
+        example: Melisa Adam
+        type: string
+      clockInLocation:
+        $ref: '#/definitions/models.Geolocation'
+      clockInTime:
+        type: string
+      clockOutLocation:
+        $ref: '#/definitions/models.Geolocation'
+      clockOutTime:
+        type: string
+      id:
+        example: "1"
+        type: string
+      location:
+        $ref: '#/definitions/models.Location'
+      serviceName:
+        example: Casa Grande Apartment
+        type: string
+      serviceNotes:
+        example: Client may be a bit groggy.
+        type: string
+      shiftDate:
+        example: "2025-01-15"
+        type: string
+      shiftTime:
+        example: 09:00 - 10:00
+        type: string
+      status:
+        description: '"scheduled", "in-progress", "completed", "missed", "cancelled"'
+        example: scheduled
+        type: string
+      tasks:
+        items:
+          $ref: '#/definitions/models.Task'
+        type: array
+    type: object
+  models.StartVisitRequest:
+    properties:
+      location:
+        $ref: '#/definitions/models.Geolocation'
+      timestamp:
+        type: string
+    type: object
+  models.Task:
+    properties:
+      completed:
+        type: boolean
+      description:
+        example: Administer morning pills with water.
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Give medication
+        type: string
+      notCompletedReason:
+        example: Client refused medication.
+        type: string
+    type: object
+  models.UpdateTaskRequest:
+    properties:
+      completed:
+        type: boolean
+      notCompletedReason:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@bluehorntek.com
+    name: API Support
+  description: This is the API for the Caregiver Shift Tracker application.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Mini EVV Logger API
+  version: "1.0"
+paths:
+  /api/reset:
+    post:
+      consumes:
+      - application/json
+      description: Resets the in-memory data to the initial set of schedules and tasks,
+        useful for testing.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Reset data store
+      tags:
+      - Admin
+  /api/schedules:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a list of all caregiver schedules, sorted chronologically
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Schedule'
+            type: array
+      summary: Get all schedules
+      tags:
+      - Schedules
+  /api/schedules/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches the details of a single schedule using its ID
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get schedule by ID
+      tags:
+      - Schedules
+  /api/schedules/{id}/cancel-clock-in:
+    post:
+      consumes:
+      - application/json
+      description: Cancels the clock-in by clearing time and location, and sets status
+        back to "scheduled"
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cancel clock-in
+      tags:
+      - Visits
+  /api/schedules/{id}/clock-in:
+    get:
+      consumes:
+      - application/json
+      description: Records the clock-in time and location for a schedule.
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Clock in for a schedule
+      tags:
+      - Visits
+  /api/schedules/{id}/end:
+    post:
+      consumes:
+      - application/json
+      description: Marks an in-progress visit as "completed" and records the end time
+        and location.
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: End Location
+        in: body
+        name: location
+        required: true
+        schema:
+          $ref: '#/definitions/models.EndVisitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: End a visit
+      tags:
+      - Visits
+  /api/schedules/{id}/start:
+    post:
+      consumes:
+      - application/json
+      description: Marks a scheduled visit as "in_progress" and records the start
+        time and location.
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Start Location
+        in: body
+        name: location
+        required: true
+        schema:
+          $ref: '#/definitions/models.StartVisitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Start a visit
+      tags:
+      - Visits
+  /api/schedules/{id}/tasks:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new task with name and description to the given schedule
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task to add
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a task to schedule
+      tags:
+      - Tasks
+  /api/schedules/today:
+    get:
+      consumes:
+      - application/json
+      description: Fetches all schedules scheduled for the current date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Schedule'
+            type: array
+      summary: Get today's schedules
+      tags:
+      - Schedules
+  /api/tasks/{taskId}/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the status of a specific task to "completed" or "not_completed".
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: Task Status Update
+        in: body
+        name: update
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a task status
+      tags:
+      - Tasks
+schemes:
+- http
+swagger: "2.0"
