@@ -3,9 +3,9 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"evv-logger-backend/internal/models"
-	"evv-logger-backend/internal/router"
-	"evv-logger-backend/internal/store"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/models"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/router"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/store"
 	"io"
 	"net/http"
 	"net/http/httptest"

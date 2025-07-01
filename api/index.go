@@ -1,8 +1,8 @@
 package api
 
 import (
-	"evv-logger-backend/internal/router"
-	"evv-logger-backend/internal/store"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/router"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/store"
 	"net/http"
 
 	"github.com/gofiber/adaptor/v2"

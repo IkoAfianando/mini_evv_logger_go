@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"evv-logger-backend/internal/models"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/models"
 )
 
 type Store struct {

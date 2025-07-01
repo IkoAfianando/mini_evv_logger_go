@@ -6,8 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
-	"evv-logger-backend/internal/handler"
-	"evv-logger-backend/internal/store"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/handler"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/store"
 )
 
 func SetupRoutes(app *fiber.App, st *store.Store) {

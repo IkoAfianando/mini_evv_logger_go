@@ -9,8 +9,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"evv-logger-backend/internal/models"
-	"evv-logger-backend/internal/store"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/models"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/store"
 )
 
 type ScheduleHandler struct {

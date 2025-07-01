@@ -5,9 +5,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	_ "evv-logger-backend/docs"
-	"evv-logger-backend/internal/router"
-	"evv-logger-backend/internal/store"
+	_ "github.com/IkoAfianando/mini_evv_logger_go/docs"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/router"
+	"github.com/IkoAfianando/mini_evv_logger_go/internal/store"
 )
 
 // @title          Mini EVV Logger API
