@@ -6,8 +6,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/IkoAfianando/mini_evv_logger_go/internal/models"
-	"github.com/IkoAfianando/mini_evv_logger_go/internal/store"
+	"github.com/IkoAfianando/mini_evv_logger_go/pkg/models"
+	"github.com/IkoAfianando/mini_evv_logger_go/pkg/store"
 )
 
 type TaskHandler struct {

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/IkoAfianando/mini_evv_logger_go/internal/models"
+	"github.com/IkoAfianando/mini_evv_logger_go/pkg/models"
 )
 
 type Store struct {
